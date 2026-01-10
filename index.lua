@@ -1,10 +1,13 @@
--- Halloween Brainrot GUI Script
--- Manuel indeks takip scripti (hile değildir)
+-- Halloween Brainrot Index
+-- GUI Toggle + Tema (Kayit YOK)
 
-local player = game.Players.LocalPlayer
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
 local PlayerGui = player:WaitForChild("PlayerGui")
 
--- Halloween Index Brainrot Listesi
+-- Brainrot List
 local brainrotList = {
     "Tartaragno","Pinealotto Fruttarino","Frogato Pirato","Mummio Rappitto",
     "Quackula","Buho de Fuego","Magi Ribbitini","Jacko Jack Jack",
@@ -17,100 +20,100 @@ local brainrotList = {
     "Eviledon","Spooky and Pumpky","La Casa Boo","Headless Horseman"
 }
 
--- Manuel sahip olunanları tutan tablo
 local owned = {}
 
--- Ekran GUI oluştur
-local screenGui = Instance.new("ScreenGui", PlayerGui)
-screenGui.Name = "BrainrotTrackerGUI"
+-- GUI
+local gui = Instance.new("ScreenGui", PlayerGui)
+gui.Name = "BrainrotGUI"
 
-local mainFrame = Instance.new("Frame", screenGui)
-mainFrame.Size = UDim2.new(0.45, 0, 0.7, 0)
-mainFrame.Position = UDim2.new(0.275, 0, 0.15, 0)
-mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-mainFrame.BorderSizePixel = 0
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0.45,0,0.7,0)
+frame.Position = UDim2.new(0.275,0,0.15,0)
+frame.BackgroundColor3 = Color3.fromRGB(18, 10, 25)
+frame.BorderSizePixel = 0
+frame.Visible = true
 
-local uicorner = Instance.new("UICorner", mainFrame)
-uicorner.CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0,14)
 
--- Başlık
-local titleLabel = Instance.new("TextLabel", mainFrame)
-titleLabel.Size = UDim2.new(1, 0, 0.12, 0)
-titleLabel.BackgroundTransparency = 1
-titleLabel.Text = "🎃 Halloween Brainrot Index"
-titleLabel.TextColor3 = Color3.fromRGB(255, 150, 0)
-titleLabel.Font = Enum.Font.GothamBold
-titleLabel.TextScaled = true
+-- Title
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1,0,0.1,0)
+title.BackgroundTransparency = 1
+title.Text = "🎃 Halloween Brainrot Index"
+title.Font = Enum.Font.GothamBold
+title.TextScaled = true
+title.TextColor3 = Color3.fromRGB(255, 140, 0)
 
--- Sayaç
-local countLabel = Instance.new("TextLabel", mainFrame)
-countLabel.Size = UDim2.new(1, 0, 0.08, 0)
-countLabel.Position = UDim2.new(0, 0.12, 0, 0)
-countLabel.BackgroundTransparency = 1
-countLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
-countLabel.Font = Enum.Font.Gotham
-countLabel.TextScaled = true
+-- Counter
+local counter = Instance.new("TextLabel", frame)
+counter.Position = UDim2.new(0,0,0.1,0)
+counter.Size = UDim2.new(1,0,0.07,0)
+counter.BackgroundTransparency = 1
+counter.Font = Enum.Font.Gotham
+counter.TextScaled = true
+counter.TextColor3 = Color3.fromRGB(200,200,200)
 
--- Kaydırılabilir liste
-local scrollFrame = Instance.new("ScrollingFrame", mainFrame)
-scrollFrame.Position = UDim2.new(0, 0, 0.20, 0)
-scrollFrame.Size = UDim2.new(1, 0, 0.78, 0)
-scrollFrame.CanvasSize = UDim2.new(0,0,0,0)
-scrollFrame.BackgroundTransparency = 1
+-- List
+local scroll = Instance.new("ScrollingFrame", frame)
+scroll.Position = UDim2.new(0,0,0.17,0)
+scroll.Size = UDim2.new(1,0,0.83,0)
+scroll.CanvasSize = UDim2.new(0,0,0,0)
+scroll.ScrollBarImageTransparency = 0.3
+scroll.BackgroundTransparency = 1
 
-local layout = Instance.new("UIListLayout", scrollFrame)
-layout.Padding = UDim.new(0, 4)
+local layout = Instance.new("UIListLayout", scroll)
+layout.Padding = UDim.new(0,6)
 
--- Listeyi güncelleyen fonksiyon
-local function updateList()
-    for _, child in ipairs(scrollFrame:GetChildren()) do
-        if child:IsA("TextButton") then
-            child:Destroy()
-        end
+-- Update
+local function update()
+    for _,v in ipairs(scroll:GetChildren()) do
+        if v:IsA("TextButton") then v:Destroy() end
     end
 
-    local countOwned = 0
+    local count = 0
 
-    for _, name in ipairs(brainrotList) do
-        local has = false
-        for _, v in ipairs(owned) do
-            if v == name then
-                has = true
-                break
-            end
-        end
+    for _,name in ipairs(brainrotList) do
+        local has = table.find(owned, name)
 
-        local entryButton = Instance.new("TextButton", scrollFrame)
-        entryButton.Size = UDim2.new(1, -10, 0, 32)
-        entryButton.BackgroundColor3 = has and Color3.fromRGB(30, 65, 30) or Color3.fromRGB(65, 30, 30)
-        entryButton.TextColor3 = has and Color3.fromRGB(0, 255, 120) or Color3.fromRGB(255, 90, 90)
-        entryButton.Font = Enum.Font.Gotham
-        entryButton.TextScaled = true
-        entryButton.Text = (has and "✔ " or "✘ ")..name
+        local btn = Instance.new("TextButton", scroll)
+        btn.Size = UDim2.new(1,-12,0,32)
+        btn.TextScaled = true
+        btn.Font = Enum.Font.GothamMedium
+        btn.Text = (has and "✔ " or "✘ ") .. name
 
-        entryButton.MouseButton1Click:Connect(function()
+        btn.BackgroundColor3 = has
+            and Color3.fromRGB(45, 90, 45)
+            or Color3.fromRGB(70, 30, 70)
+
+        btn.TextColor3 = has
+            and Color3.fromRGB(0,255,120)
+            or Color3.fromRGB(255,180,255)
+
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0,8)
+
+        btn.MouseButton1Click:Connect(function()
             if has then
-                for i,v in ipairs(owned) do
-                    if v == name then
-                        table.remove(owned, i)
-                        break
-                    end
-                end
+                table.remove(owned, table.find(owned,name))
             else
                 table.insert(owned, name)
             end
-            updateList()
+            update()
         end)
 
-        if has then
-            countOwned = countOwned + 1
-        end
+        if has then count += 1 end
     end
 
-    countLabel.Text = "Collected: "..countOwned.." / "..#brainrotList
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y)
+    counter.Text = "Collected: "..count.." / "..#brainrotList
+    scroll.CanvasSize = UDim2.new(0,0,0,layout.AbsoluteContentSize.Y)
 end
 
--- Başlangıçta listeyi göster
-updateList()
+update()
+
+-- GUI Toggle (RightShift)
+UserInputService.InputBegan:Connect(function(input, gpe)
+    if not gpe and input.KeyCode == Enum.KeyCode.RightShift then
+        frame.Visible = not frame.Visible
+    end
+end)
+
 
