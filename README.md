@@ -22,3 +22,4 @@ Script, [Halloween Index](https://stealabrainrot.fandom.com/wiki/Halloween_Index
 ## ⚠️ Notlar
 - Script, oyun içi güncellemelerle uyumlu olmayabilir; index değişirse scripti güncellemeniz gerekebilir.  
 - Sadece envanterinizdeki mevcut brainrot’ları sayar, **otomatik olarak toplamaz**.  
+Made with ❤️ by Kyalumut
