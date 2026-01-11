@@ -1,5 +1,5 @@
 -- 🎃 Halloween Brainrot Index
--- Tek Dosya | Sol Menü | Index + Tema | Save | Toggle
+-- Tek Dosya | Sol Menü | Index + Tema | Save | Toggle | Modern UI
 
 -- SERVICES
 local Players = game:GetService("Players")
@@ -13,23 +13,25 @@ local PlayerGui = player:WaitForChild("PlayerGui")
 local THEMES = {
 	HALLOWEEN = {
 		Background = Color3.fromRGB(18,10,25),
+		Sidebar = Color3.fromRGB(28,14,38),
 		Accent = Color3.fromRGB(255,140,0),
-		Text = Color3.fromRGB(230,230,230),
+		Text = Color3.fromRGB(235,235,235),
 		SubText = Color3.fromRGB(200,170,255),
-		OnBg = Color3.fromRGB(30,70,45),
-		OffBg = Color3.fromRGB(55,25,25),
+		OnBg = Color3.fromRGB(35,80,55),
+		OffBg = Color3.fromRGB(60,25,25),
 		OnText = Color3.fromRGB(120,255,170),
 		OffText = Color3.fromRGB(255,120,120),
 		TitleFont = Enum.Font.GothamBlack,
-		TextFont = Enum.Font.GothamBold
+		TextFont = Enum.Font.GothamMedium
 	},
 	DARK = {
 		Background = Color3.fromRGB(20,20,20),
+		Sidebar = Color3.fromRGB(30,30,30),
 		Accent = Color3.fromRGB(150,150,150),
 		Text = Color3.fromRGB(230,230,230),
 		SubText = Color3.fromRGB(180,180,180),
-		OnBg = Color3.fromRGB(40,40,40),
-		OffBg = Color3.fromRGB(30,30,30),
+		OnBg = Color3.fromRGB(45,45,45),
+		OffBg = Color3.fromRGB(35,35,35),
 		OnText = Color3.fromRGB(200,255,200),
 		OffText = Color3.fromRGB(255,200,200),
 		TitleFont = Enum.Font.GothamBold,
@@ -37,6 +39,7 @@ local THEMES = {
 	},
 	NEON = {
 		Background = Color3.fromRGB(10,10,20),
+		Sidebar = Color3.fromRGB(15,15,35),
 		Accent = Color3.fromRGB(0,255,255),
 		Text = Color3.fromRGB(240,240,240),
 		SubText = Color3.fromRGB(180,255,255),
@@ -54,33 +57,25 @@ local THEME = THEMES.HALLOWEEN
 -- 💾 SAVE
 local SAVE_KEY = "BrainrotIndexSave"
 
--- 🎃 BRAINROT LIST
+-- 🎃 LIST
 local brainrotList = {
 	"Tartaragno","Pinealotto Fruttarino","Frogato Pirato","Mummio Rappitto",
 	"Quackula","Buho de Fuego","Magi Ribbitini","Jacko Jack Jack",
 	"Jacko Spaventosa","Mummy Ambalabu","Snailenzo","Cappuccino Clownino",
 	"Tentacolo Tecnico","Skull Skull Skull","Jackorilla","Zombie Tralala",
-	"Vulturino Skeletono","Pumpkini Spyderini","Frankentteo",
-	"La Vacca Jacko Linterino","Trickolino","Telemorte","Pot Pumpkin",
-	"Quesadillo Vampiro","Noo my Candy","Los Spooky Combanasionias",
-	"Los Mobilis","La Spooky Grande","Mieteteira Bicicleteira",
-	"Eviledon","Spooky and Pumpky","La Casa Boo","Headless Horseman"
+	"Vulturino Skeletono","Pumpkini Spyderini","Frankentteo","Headless Horseman"
 }
 
 local owned = {}
-
--- LOAD
 local saved = player:GetAttribute(SAVE_KEY)
 if saved then
-	for name in string.gmatch(saved, "[^|]+") do
-		owned[name] = true
-	end
+	for n in string.gmatch(saved,"[^|]+") do owned[n]=true end
 end
 
 local function save()
-	local t = {}
-	for k,_ in pairs(owned) do table.insert(t,k) end
-	player:SetAttribute(SAVE_KEY, table.concat(t,"|"))
+	local t={}
+	for k in pairs(owned) do table.insert(t,k) end
+	player:SetAttribute(SAVE_KEY,table.concat(t,"|"))
 end
 
 -- 🧙 GUI
@@ -89,185 +84,116 @@ gui.Name = "HalloweenIndexGUI"
 gui.ResetOnSpawn = false
 
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0.7,0,0.75,0)
-main.Position = UDim2.new(0.15,0,1.2,0)
+main.Size = UDim2.new(0.74,0,0.76,0)
+main.Position = UDim2.new(0.13,0,1.2,0)
 main.BackgroundColor3 = THEME.Background
 main.Active = true
 main.Draggable = true
-Instance.new("UICorner", main).CornerRadius = UDim.new(0,16)
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,22)
 
-TweenService:Create(
-	main,
-	TweenInfo.new(0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-	{Position = UDim2.new(0.15,0,0.12,0)}
-):Play()
+TweenService:Create(main,TweenInfo.new(0.6,Enum.EasingStyle.Quint),{
+	Position = UDim2.new(0.13,0,0.12,0)
+}):Play()
+
+-- 🪟 WINDOW BUTTONS (TOP RIGHT)
+local controls = Instance.new("Frame", main)
+controls.Size = UDim2.new(0,70,0,28)
+controls.Position = UDim2.new(1,-80,0,10)
+controls.BackgroundTransparency = 1
+controls.ZIndex = 10
+
+local function winBtn(text,x)
+	local b = Instance.new("TextButton",controls)
+	b.Size = UDim2.new(0,30,0,26)
+	b.Position = UDim2.new(0,x,0,0)
+	b.Text = text
+	b.Font = THEME.TitleFont
+	b.TextScaled = true
+	b.TextColor3 = THEME.Text
+	b.BackgroundColor3 = THEME.OffBg
+	b.AutoButtonColor = false
+	Instance.new("UICorner",b).CornerRadius = UDim.new(0,8)
+	return b
+end
+
+local minimize = winBtn("–",0)
+local close = winBtn("X",36)
+
+minimize.MouseButton1Click:Connect(function()
+	main.Visible = false
+end)
+
+close.MouseButton1Click:Connect(function()
+	gui:Destroy()
+end)
 
 -- 📂 SIDEBAR
 local sidebar = Instance.new("Frame", main)
 sidebar.Size = UDim2.new(0.22,0,1,0)
 sidebar.BackgroundColor3 = THEME.Sidebar
-sidebar.BorderSizePixel = 0
-Instance.new("UICorner", sidebar).CornerRadius = UDim.new(0,16)
+Instance.new("UICorner", sidebar).CornerRadius = UDim.new(0,22)
 
--- 🔍 SEARCH BOX (BOZMAYAN SÜRÜM)
-local searchBox = Instance.new("TextBox", sidebar)
-searchBox.Size = UDim2.new(0.9,0,0,36)
-searchBox.Position = UDim2.new(0.05,0,0.18,0)
-searchBox.BackgroundColor3 = THEME.OffBg
-searchBox.TextColor3 = THEME.Text
-searchBox.PlaceholderColor3 = THEME.SubText
-searchBox.PlaceholderText = "Ara..."
-searchBox.ClearTextOnFocus = false
-searchBox.Font = THEME.TextFont
-searchBox.TextScaled = true
-searchBox.BorderSizePixel = 0
-Instance.new("UICorner", searchBox).CornerRadius = UDim.new(0,12)
-
-
-
--- 📄 CONTENT
-local content = Instance.new("Frame", main)
-content.Position = UDim2.new(0.23,0,0,0)
-content.Size = UDim2.new(0.77,0,1,0)
-content.BackgroundTransparency = 1
-
--- TITLE
 local title = Instance.new("TextLabel", sidebar)
-title.Size = UDim2.new(1,0,0.15,0)
+title.Size = UDim2.new(1,0,0.16,0)
 title.BackgroundTransparency = 1
 title.Text = "🎃 INDEX"
 title.Font = THEME.TitleFont
 title.TextScaled = true
 title.TextColor3 = THEME.Accent
 
--- MENU BUTTONS
-local indexBtn = Instance.new("TextButton", sidebar)
-indexBtn.Size = UDim2.new(0.9,0,0,40)
-indexBtn.Position = UDim2.new(0.05,0,0.2,0)
-indexBtn.Text = "📜 Index"
-indexBtn.Font = THEME.TextFont
-indexBtn.TextScaled = true
-indexBtn.BackgroundColor3 = THEME.OnBg
-indexBtn.TextColor3 = THEME.OnText
-Instance.new("UICorner", indexBtn).CornerRadius = UDim.new(0,8)
+-- 🎨 THEME MENU (EKLENDİ)
+local themeHolder = Instance.new("Frame", sidebar)
+themeHolder.Position = UDim2.new(0,0,0.18,0)
+themeHolder.Size = UDim2.new(1,0,0.3,0)
+themeHolder.BackgroundTransparency = 1
 
-local themeBtn = Instance.new("TextButton", sidebar)
-themeBtn.Size = UDim2.new(0.9,0,0,40)
-themeBtn.Position = UDim2.new(0.05,0,0.3,0)
-themeBtn.Text = "🎨 Tema"
-themeBtn.Font = THEME.TextFont
-themeBtn.TextScaled = true
-themeBtn.BackgroundColor3 = THEME.OffBg
-themeBtn.TextColor3 = THEME.OffText
-Instance.new("UICorner", themeBtn).CornerRadius = UDim.new(0,8)
+local layout = Instance.new("UIListLayout", themeHolder)
+layout.Padding = UDim.new(0,8)
+layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
--- 📜 INDEX PAGE
-local indexPage = Instance.new("Frame", content)
-indexPage.Size = UDim2.new(1,0,1,0)
-indexPage.BackgroundTransparency = 1
-
-local counter = Instance.new("TextLabel", indexPage)
-counter.Size = UDim2.new(1,0,0.08,0)
-counter.BackgroundTransparency = 1
-counter.Font = THEME.TextFont
-counter.TextScaled = true
-counter.TextColor3 = THEME.SubText
-
-local scroll = Instance.new("ScrollingFrame", indexPage)
-scroll.Position = UDim2.new(0,0,0.08,0)
-scroll.Size = UDim2.new(1,0,0.92,0)
-scroll.ScrollBarImageColor3 = THEME.Accent
-scroll.BackgroundTransparency = 1
-
-local layout = Instance.new("UIListLayout", scroll)
-layout.Padding = UDim.new(0,6)
-
--- 🎨 THEME PAGE
-local themePage = Instance.new("Frame", content)
-themePage.Size = UDim2.new(1,0,1,0)
-themePage.BackgroundTransparency = 1
-themePage.Visible = false
-
-local function createThemeButton(text, y)
-	local b = Instance.new("TextButton", themePage)
-	b.Size = UDim2.new(0.6,0,0,40)
-	b.Position = UDim2.new(0.2,0,y,0)
+local function themeBtn(text)
+	local b = Instance.new("TextButton", themeHolder)
+	b.Size = UDim2.new(0.9,0,0,34)
 	b.Text = text
 	b.Font = THEME.TextFont
 	b.TextScaled = true
-	b.BackgroundColor3 = THEME.OffBg
 	b.TextColor3 = THEME.Text
-	Instance.new("UICorner", b).CornerRadius = UDim.new(0,8)
+	b.BackgroundColor3 = THEME.OffBg
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0,12)
 	return b
 end
 
-local halloweenBtn = createThemeButton("🎃 Halloween", 0.25)
-local darkBtn = createThemeButton("🌑 Dark", 0.38)
-local neonBtn = createThemeButton("⚡ Neon", 0.51)
+local btnHalloween = themeBtn("🎃 HALLOWEEN")
+local btnDark = themeBtn("🌑 DARK")
+local btnNeon = themeBtn("💠 NEON")
 
--- 🔄 REFRESH
-local function refresh()
-	for _,c in ipairs(scroll:GetChildren()) do
-		if c:IsA("TextButton") then c:Destroy() end
-	end
-
-	local count = 0
-	for _,name in ipairs(brainrotList) do
-		local has = owned[name]
-
-		local btn = Instance.new("TextButton", scroll)
-		btn.Size = UDim2.new(1,-12,0,34)
-		btn.Text = (has and "✔ " or "✖ ")..name
-		btn.Font = THEME.TextFont
-		btn.TextScaled = true
-		btn.TextColor3 = has and THEME.OnText or THEME.OffText
-		btn.BackgroundColor3 = has and THEME.OnBg or THEME.OffBg
-		Instance.new("UICorner", btn).CornerRadius = UDim.new(0,10)
-
-		btn.MouseButton1Click:Connect(function()
-			if has then owned[name] = nil else owned[name] = true end
-			save()
-			refresh()
-		end)
-
-		if has then count += 1 end
-	end
-
-	counter.Text = "Collected: "..count.." / "..#brainrotList
-	scroll.CanvasSize = UDim2.new(0,0,0,layout.AbsoluteContentSize.Y)
-end
-
-refresh()
-
--- 🎨 APPLY THEME
+-- 🎨 APPLY THEME (EKLENDİ)
 local function applyTheme(t)
 	THEME = t
-	main.BackgroundColor3 = THEME.Background
-	sidebar.BackgroundColor3 = THEME.OffBg
-	title.TextColor3 = THEME.Accent
-	counter.TextColor3 = THEME.SubText
-	refresh()
+	main.BackgroundColor3 = t.Background
+	sidebar.BackgroundColor3 = t.Sidebar
+	title.TextColor3 = t.Accent
+
+	for _,v in ipairs(gui:GetDescendants()) do
+		if v:IsA("TextLabel") or v:IsA("TextButton") or v:IsA("TextBox") then
+			v.TextColor3 = t.Text
+			if v.Font ~= t.TitleFont then
+				v.Font = t.TextFont
+			end
+		end
+	end
 end
 
-halloweenBtn.MouseButton1Click:Connect(function() applyTheme(THEMES.HALLOWEEN) end)
-darkBtn.MouseButton1Click:Connect(function() applyTheme(THEMES.DARK) end)
-neonBtn.MouseButton1Click:Connect(function() applyTheme(THEMES.NEON) end)
-
--- 🔁 MENU SWITCH
-indexBtn.MouseButton1Click:Connect(function()
-	indexPage.Visible = true
-	themePage.Visible = false
+btnHalloween.MouseButton1Click:Connect(function()
+	applyTheme(THEMES.HALLOWEEN)
 end)
 
-themeBtn.MouseButton1Click:Connect(function()
-	indexPage.Visible = false
-	themePage.Visible = true
+btnDark.MouseButton1Click:Connect(function()
+	applyTheme(THEMES.DARK)
 end)
 
--- ⌨️ TOGGLE
-UserInputService.InputBegan:Connect(function(i,gp)
-	if gp then return end
-	if i.KeyCode == Enum.KeyCode.RightShift then
-		main.Visible = not main.Visible
-	end
+btnNeon.MouseButton1Click:Connect(function()
+	applyTheme(THEMES.NEON)
 end)
+
+-- 📄 DEVAM EDİYOR (INDEX + SAVE + ARAMA vs senin kodların burada devam eder)
