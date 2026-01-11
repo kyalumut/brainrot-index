@@ -105,8 +105,25 @@ TweenService:Create(
 -- 📂 SIDEBAR
 local sidebar = Instance.new("Frame", main)
 sidebar.Size = UDim2.new(0.22,0,1,0)
-sidebar.BackgroundColor3 = THEME.OffBg
+sidebar.BackgroundColor3 = THEME.Sidebar
+sidebar.BorderSizePixel = 0
 Instance.new("UICorner", sidebar).CornerRadius = UDim.new(0,16)
+
+-- 🔍 SEARCH BOX (BOZMAYAN SÜRÜM)
+local searchBox = Instance.new("TextBox", sidebar)
+searchBox.Size = UDim2.new(0.9,0,0,36)
+searchBox.Position = UDim2.new(0.05,0,0.18,0)
+searchBox.BackgroundColor3 = THEME.OffBg
+searchBox.TextColor3 = THEME.Text
+searchBox.PlaceholderColor3 = THEME.SubText
+searchBox.PlaceholderText = "Ara..."
+searchBox.ClearTextOnFocus = false
+searchBox.Font = THEME.TextFont
+searchBox.TextScaled = true
+searchBox.BorderSizePixel = 0
+Instance.new("UICorner", searchBox).CornerRadius = UDim.new(0,12)
+
+
 
 -- 📄 CONTENT
 local content = Instance.new("Frame", main)
