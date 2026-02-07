@@ -1,77 +1,66 @@
--- Xeno & Exploit Optimized Fly Script
-local CoreGui = game:GetService("CoreGui")
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
+-- Basitleştirilmiş ve Güçlendirilmiş Versiyon
+local player = game:GetService("Players").LocalPlayer
+local pgui = player:WaitForChild("PlayerGui")
 
-local lp = Players.LocalPlayer
-local mouse = lp:GetMouse()
+-- Eğer eski menü varsa temizle
+if pgui:FindFirstChild("ModernFly") then pgui.ModernFly:Destroy() end
 
--- Eski menü varsa sil (Çakışmaması için)
-if CoreGui:FindFirstChild("PenguinFly") then
-    CoreGui.PenguinFly:Destroy()
-end
+print("Script başlatılıyor...") -- Console'da kontrol et
 
--- UI Tasarımı
-local screen = Instance.new("ScreenGui")
-screen.Name = "PenguinFly"
-screen.Parent = CoreGui -- PlayerGui yerine CoreGui (Daha güvenli)
+-- UI Oluşturma
+local sg = Instance.new("ScreenGui")
+sg.Name = "ModernFly"
+sg.ResetOnSpawn = false
+sg.DisplayOrder = 9999 -- En üstte görünmesi için
+sg.Parent = pgui
 
-local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 140, 0, 45)
-main.Position = UDim2.new(0.05, 0, 0.4, 0)
-main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-main.BorderSizePixel = 0
-main.Active = true
-main.Draggable = true -- Menüyü ekranda sürükleyebilirsin
-main.Parent = screen
-
-local corner = Instance.new("UICorner", main)
-corner.CornerRadius = UDim.new(0, 8)
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 150, 0, 50)
+frame.Position = UDim2.new(0.5, -75, 0.2, 0) -- Ekranın üst-orta kısmı
+frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+frame.BorderSizePixel = 2
+frame.Active = true
+frame.Draggable = true -- Menüyü tut sürükle
+frame.Parent = sg
 
 local btn = Instance.new("TextButton")
 btn.Size = UDim2.new(1, 0, 1, 0)
 btn.BackgroundTransparency = 1
 btn.Text = "UÇUŞ: KAPALI"
 btn.TextColor3 = Color3.new(1, 1, 1)
-btn.Font = Enum.Font.GothamBold
-btn.TextSize = 14
-btn.Parent = main
+btn.TextSize = 18
+btn.Font = Enum.Font.SourceSansBold
+btn.Parent = frame
 
--- Uçma Ayarları
+print("MENÜ OLUŞTURULDU!") -- Burayı görüyorsan buton ekrandadır
+
+-- Uçma Mantığı
 local flying = false
-local speed = 60
+local speed = 50
 local bv = nil
 
-local function toggle()
-    local char = lp.Character
-    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-    local root = char.HumanoidRootPart
-    
+btn.MouseButton1Click:Connect(function()
     flying = not flying
     btn.Text = flying and "UÇUŞ: AÇIK" or "UÇUŞ: KAPALI"
+    frame.BackgroundColor3 = flying and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(40, 40, 40)
     
-    -- Renk Geçişi
-    TweenService:Create(main, TweenInfo.new(0.3), {
-        BackgroundColor3 = flying and Color3.fromRGB(0, 120, 255) or Color3.fromRGB(20, 20, 20)
-    }):Play()
-
+    local char = player.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    
     if flying then
         bv = Instance.new("BodyVelocity")
-        bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
+        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
         bv.Velocity = Vector3.new(0, 0, 0)
-        bv.Parent = root
+        bv.Parent = char.HumanoidRootPart
         
         task.spawn(function()
-            while flying and task.wait() do
-                if bv then
-                    bv.Velocity = workspace.CurrentCamera.CFrame.LookVector * speed
-                end
+            while flying do
+                bv.Velocity = workspace.CurrentCamera.CFrame.LookVector * speed
+                task.wait()
             end
             if bv then bv:Destroy() end
         end)
     else
         if bv then bv:Destroy() end
     end
-end
-
-btn.MouseButton1Click:Connect(toggle)
+end)
